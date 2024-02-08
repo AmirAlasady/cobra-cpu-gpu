@@ -1,0 +1,3 @@
+numpy==1.23.5
+cupy==12.3.0
+matplotlib==3.7.1
