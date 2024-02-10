@@ -39,7 +39,7 @@ class Model:
                         param.set_cpu()
                         print(param.device)
                         print(f'<{name}> of type <{param}> : moved to (cpu)')
-        self.tmp=None
+        
              
     # set_gpu
     @abstractmethod
@@ -111,68 +111,39 @@ class Model:
         return self.grad
         
     
+
+    # experimental space
+    
     def train(self,epochs,X,Y,lr,loss,loss_prime,plot=True):
         self.loss_history=[]
         self.plot=plot
-        if self.tmp != None:
-            self.load_state_dict(self.tmp)
-            for i in range(epochs):
-                self.error=0
-                for x,y in zip(X,Y):
-                    self.output=self.forward(x)
-                    self.error += loss(y,self.output)           
-                    self.grad = loss_prime(y,self.output)
-                    self.grad=self.backward(self.grad,lr)
+        for i in range(epochs):
+            self.error=0
+            for x,y in zip(X,Y):
+                self.output=self.forward(x)
+                self.error += loss(y,self.output)           
+                self.grad = loss_prime(y,self.output)
+                self.grad=self.backward(self.grad,lr)
 
-                self.error /= len(x)
-                self.loss_history.append(self.error)
-                print(f"{i + 1}/{epochs}, error={self.error}")
+            self.error /= len(x)
+            self.loss_history.append(self.error)
+            print(f"{i + 1}/{epochs}, error={self.error}")
             
-            if self.plot:
-                if self.device=='gpu':
-                    self.loss_history2 = [item.item() for item in self.loss_history]
-                    plt.plot(self.loss_history2)
-                    plt.xlabel('Epoch')
-                    plt.ylabel('Loss')
-                    plt.title('Loss During Training')
-                    plt.show()
-                else:
-                     plt.plot(self.loss_history)
-                     plt.xlabel('Epoch')
-                     plt.ylabel('Loss')
-                     plt.title('Loss During Training')
-                     plt.show()        
-            self.tmp=self.state_dict()                 
-        else:
-            for i in range(epochs):
-                self.error=0
-                for x,y in zip(X,Y):
-                    self.output=self.forward(x)
-                    self.error += loss(y,self.output)           
-                    self.grad = loss_prime(y,self.output)
-                    self.grad=self.backward(self.grad,lr)
-
-                self.error /= len(x)
-                self.loss_history.append(self.error)
-                print(f"{i + 1}/{epochs}, error={self.error}")
-            
-            if self.plot:
-                if self.device=='gpu':
-                    self.loss_history2 = [item.item() for item in self.loss_history]
-                    plt.plot(self.loss_history2)
-                    plt.xlabel('Epoch')
-                    plt.ylabel('Loss')
-                    plt.title('Loss During Training')
-                    plt.show()
-                else:
-                     plt.plot(self.loss_history)
-                     plt.xlabel('Epoch')
-                     plt.ylabel('Loss')
-                     plt.title('Loss During Training')
-                     plt.show()        
-            self.tmp=self.state_dict()
-
-
+        if self.plot:
+            if self.device=='gpu':
+                self.loss_history2 = [item.item() for item in self.loss_history]
+                plt.plot(self.loss_history2)
+                plt.xlabel('Epoch')
+                plt.ylabel('Loss')
+                plt.title('Loss During Training')
+                plt.show()
+            else:
+                 plt.plot(self.loss_history)
+                 plt.xlabel('Epoch')
+                 plt.ylabel('Loss')
+                 plt.title('Loss During Training')
+                 plt.show()
+                 
     # super state_dict saver 'for all constructor parameters'
     def state_dict(self):
         state_dict  = {}
@@ -195,7 +166,6 @@ class Model:
                    
         state_dict["device"] = self.device
         return state_dict
-    
     # super state_dict loader 'for all constructor parameters'
     def load_state_dict(self, state_dict):
         if state_dict['device']=='gpu':
@@ -230,5 +200,3 @@ class Model:
                    if isinstance(param, Softmax):  
                        param.load_state_dict()
            self.set_cpu()
-            
-
