@@ -4,6 +4,7 @@ import numpy as np
 
 class loss_base:
     pass
+
 class Loss_on_cpu(loss_base):
     
     @staticmethod

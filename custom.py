@@ -88,6 +88,9 @@ class Model:
                     self.input_data = param.forward(self.input_data)
                 if isinstance(param, Softmax):
                     self.input_data = param.forward(self.input_data)
+                if isinstance(param, ReLU):
+                    self.input_data = param.forward(self.input_data)
+                    
         return self.input_data
     
     # required backward method
@@ -107,6 +110,8 @@ class Model:
                 if isinstance(param, Sigmoid):
                     self.grad= param.backward(self.grad,lr)
                 if isinstance(param, Softmax):
+                    self.grad= param.backward(self.grad,lr)
+                if isinstance(param, ReLU):
                     self.grad= param.backward(self.grad,lr)
         return self.grad
         
@@ -163,6 +168,8 @@ class Model:
                    state_dict[name] = param.state_dict()
                 if isinstance(param, Softmax):                   
                    state_dict[name] = param.state_dict()
+                if isinstance(param, ReLU):                   
+                   state_dict[name] = param.state_dict()  
                    
         state_dict["device"] = self.device
         return state_dict
@@ -183,6 +190,8 @@ class Model:
                        param.load_state_dict()
                    if isinstance(param, Softmax):  
                        param.load_state_dict()
+                   if isinstance(param, ReLU):  
+                       param.load_state_dict()
            self.set_gpu()
         else:
            for name, param in self.__dict__.items():
@@ -198,5 +207,7 @@ class Model:
                    if isinstance(param, Sigmoid):  
                        param.load_state_dict()
                    if isinstance(param, Softmax):  
+                       param.load_state_dict()
+                   if isinstance(param, ReLU):  
                        param.load_state_dict()
            self.set_cpu()
